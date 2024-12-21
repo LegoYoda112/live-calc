@@ -1,0 +1,29 @@
+[project]
+name = "live_calc"
+version = "0.0.1"
+authors = [
+    { name = "Thomas Godden", email = "thomas.godden@outlook.com"}
+]
+description = "A live python calculator"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "eel",
+    "numpy",
+    "pint"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[tools.setuptools.package-data]
+live_calc = [
+    "web/*.html", "web/*.js", "web/*.css"
+]

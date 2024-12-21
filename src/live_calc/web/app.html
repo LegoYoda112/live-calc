@@ -1,0 +1,52 @@
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <script type="text/javascript" src="/eel.js"></script>
+
+  <script type="text/javascript" src="script.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<title>new calc</title>
+
+<body>
+  <div class = "calc-input" id = "line-error-container"><div id = "line-error-break-container"></div><span id = "line-error"></span></div>
+
+  <!-- Calculator -->
+  <div class = "fullscreen-padding">
+    <p class = "calc-input" id = "output"></p>
+    <p class = "calc-input" id = "display-text">
+    </p>
+    <p class = "calc-input" id = "display-text-selected"></p>
+    <textarea class = "calc-input" id = "input"></textarea>
+  </div>
+  
+  <!-- Status dots -->
+  <span class = "status-dot" id = "save-dot"></span>
+  <span class = "status-dot" id = "error-dot"></span>
+
+  <p id = "error-info"></p>
+
+  <!-- Diagnostic info -->
+  <div id="info">
+    <span id = "time-info" class = "info_text"></span>
+    <span id = "var-info" class = "info_text"></span>
+  </div>
+
+  <!-- File picker menu -->
+  <div class = "fullscreen-padding blur-overlay" id = "file-menu">
+    <div id = "file-list">
+    </div>
+    <template id = "file-template">
+      <div class = "file-holder">
+       <button class = "file-name">filename</button>
+      </div>
+    </template>
+  </div>
+
+  <!-- File save menu -->
+  <div class = "fullscreen-padding blur-overlay" id = "save-menu">
+    <textarea id = "save-name" placeholder="Enter a cool name..."></textarea>
+  </div>
+</body>

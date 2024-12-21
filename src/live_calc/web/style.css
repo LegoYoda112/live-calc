@@ -1,0 +1,305 @@
+/* TODO: clean this all up! */
+
+html,body{
+  margin: 0;
+  padding: 0;
+
+  background-color: rgb(19, 17, 20);
+  /* overflow: hidden; */
+}
+
+:root {
+  --main-text-color: white;
+  --highlight-text-color: rgb(107, 255, 151);
+  --comment-color: rgb(124, 124, 124);
+  --number-color: rgb(110, 171, 255);
+  --equal-color: rgb(231, 123, 46);
+}
+
+.calc-input {
+  position:absolute;
+
+  margin: 0;
+  background-color: rgb(0, 0, 0, 0);
+  color: rgb(255,255,255);
+  
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.1em;
+  
+  /* width: 99%; */
+  padding: 10px;
+  box-sizing: border-box;
+
+  overflow: visible;
+  white-space: pre;
+
+  caret-color: var(--highlight-text-color);
+
+  resize: none;
+}
+
+.fullscreen-padding{
+  position: relative;
+
+  background-color: rgb(0,0,0,0);
+  
+  top: 0;
+  left: 0;
+  height: 100vh;
+  
+  padding: 5px;
+  
+  box-sizing: border-box;
+  overflow-y: scroll;
+  overflow-X: scroll;
+}
+
+#output {
+  /* color: rgb(69, 196, 105); */
+  color: var(--highlight-text-color);
+}
+
+#input{
+  border: none;
+  outline: none;
+
+  width: 80%;
+  height: 90vh;
+
+  color: rgb(0,0,0,0);
+
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+
+  white-space: pre;
+
+  resize: none;
+}
+
+#line-error-container{
+  margin: 0px;
+  padding: 0px;
+
+  margin-top: 15px;
+}
+
+#line-error{
+  width: 100vw;
+  height: 24px;
+
+  display: inline-block;
+
+  background-color: rgb(200, 0, 0, 0.0);
+
+  transition-property: background-color;
+  transition-duration: 0.5s;
+}
+
+#error-info{
+  position: fixed;
+  pointer-events: none;
+
+  bottom: 10px;
+  right: 10px;
+
+  border-radius: 10px;
+
+  padding: 10px;
+  
+  color: rgb(0,0,0,0);
+  background-color: rgb(0,0,0,0);
+
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8em;
+
+  transition-duration: 0.3s;
+}
+
+.status-dot{
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+
+  height: 10px;
+  width: 10px;
+  background-color: white;
+  border-radius: 50%;
+  display: inline-block;
+  
+  transition-property: background-color;
+  transition-duration: 0.5s;
+}
+
+#save-dot{
+  background-color: rgb(0,0,0,0);
+}
+
+#error-dot{
+  background-color: rgb(0,0,0,0);
+}
+
+
+.flash-animation{
+  animation-name: flash-on-off;
+  animation-duration: 2s;
+}
+
+@keyframes flash-on-off{
+  0% {background-color: var(--highlight-text-color)}
+  100% {background-color: rgb(0,0,0,0)}
+}
+
+#info{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  border-top: 1px rgb(50,50,50);
+  border-style: solid;
+
+  width: 100%;
+  padding: 10px;
+  background-color: rgb(0,0,0);
+
+  display: none;
+}
+
+.info_text{
+  color: rgb(70, 70, 70);
+
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.9em;
+}
+
+#display-text-selected{
+  color: rgb(0,0,0,0);
+}
+
+.highlight{
+  color: rgb(0,0,0,0);
+  background-color: rgba(122, 151, 231, 0.5);
+}
+
+#time-info{
+  /* position: fixed;
+  bottom: 10px;
+  left: 10px; */
+}
+
+#var-info{
+
+  color: rgb(57, 57, 57);
+
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.9em;
+}
+
+#file-menu{
+
+  padding: 20px;
+}
+
+.file-name{
+  width: 100%;
+  
+  background-color: rgb(0,0,0,0);
+  color: white;
+  
+  margin: 0px;
+  padding: 0px;
+  
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.1em;
+  text-align: left;
+  
+  border: none;
+
+  cursor: pointer;
+  
+  transition-duration: 0.3s;
+}
+
+.file-name:hover{
+  color: var(--highlight-text-color);
+  margin-left: 5px;
+}
+
+.file-holder{
+  width: 100%;
+}
+
+.blur-overlay{
+  position: fixed;
+  top: 0;
+  right: 0;
+
+  backdrop-filter: blur(3px);
+  background-color: rgb(0,0,0,0.2);
+
+
+  display: none;
+}
+
+#save-file {
+  padding: 10px;
+}
+
+#save-name {
+  padding: 20px;
+  width: 100%;
+
+  color: white;
+
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.5em;
+
+  background: none;
+
+  border: none;
+  overflow: auto;
+  outline: none;
+
+  resize: none;
+
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
+.comment{
+  color: var(--comment-color);
+}
+
+.number{
+  color: var(--number-color);
+}
+
+.equal{
+  color: var(--equal-color);
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 7px;
+  /* height: 7px;    */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(0,0,0,0);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(60,60,60);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(100,100,100);
+} 
+
+::-webkit-scrollbar-corner { 
+  background: rgba(0,0,0,0.0); 
+}
