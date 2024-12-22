@@ -27,7 +27,7 @@ def parse_line(line, context, output_only = True):
     line = re.sub("(\))(?!=[0-9a-zA-Z])", " )", line)
 
     # Pad control characters
-    chars_to_pad = ('\=', '\+', '\*', '\[', '\]', '\,', '\/')
+    chars_to_pad = ('\=', '\+', '\*', '\[', '\]', '\,', '\/', '\.')
     for char in chars_to_pad:
         line = re.sub(char, " " + char[-1] + " ", line)
 

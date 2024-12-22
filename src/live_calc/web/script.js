@@ -8,10 +8,13 @@ let output
 let output_holder
 let incoming_line_dependencies = []
 let outgoing_line_dependencies = []
+let dependency_lines
 let error_dot
 let time_info
 let var_info
 let line_error_break_container
+
+let LINE_HEIGHT = 1.4;
 
 let file_menu
 let file_list
@@ -28,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   display_text = document.getElementById("display-text");
   display_text_selected = document.getElementById("display-text-selected");
   line_display = document.getElementById("line-display");
+  dependency_lines = document.getElementById("dependency-lines");
   output = document.getElementById("output");
   output_holder = document.getElementById("output-holder");
   error_dot = document.getElementById("error-dot");
@@ -151,6 +155,51 @@ function update_display_text(){
   }
 
   line_display.innerHTML = line_text;
+
+  
+  dependency_lines.innerHTML = "";
+  em_size = parseFloat(getComputedStyle(dependency_lines).fontSize);
+  
+  function generate_curve_path_text(start_line, end_line){
+    line_inner_x = 1.5;
+    line_outer_x = 0.9;
+
+    return `M 
+    ${line_inner_x * em_size} ${(start_line * LINE_HEIGHT + LINE_HEIGHT/2) * em_size} 
+    Q
+    ${line_outer_x * em_size} ${(start_line * LINE_HEIGHT + LINE_HEIGHT/2) * em_size}
+    ,
+    ${line_outer_x * em_size} ${(start_line * LINE_HEIGHT) * em_size}
+    ,
+    ${line_outer_x * em_size} ${((start_line + dep_line)/2 * LINE_HEIGHT) * em_size}
+    ,
+    ${line_outer_x * em_size} ${(end_line * LINE_HEIGHT + LINE_HEIGHT) * em_size}
+    ,
+    ${line_outer_x * em_size} ${(end_line * LINE_HEIGHT + LINE_HEIGHT/2) * em_size} 
+    ,
+    ${line_inner_x * em_size} ${(end_line * LINE_HEIGHT + LINE_HEIGHT/2) * em_size} `;
+  }
+
+
+  for (let i = 0; i < current_outgoing_dependencies.length; i ++){
+    var new_path_svg = document.createElementNS('http://www.w3.org/2000/svg','path');
+
+    dep_line = current_outgoing_dependencies[i]
+
+    new_path_svg.setAttribute('d', generate_curve_path_text(dep_line, current_line));
+    new_path_svg.setAttribute("class", "dependency-line outgoing-dependency")
+    dependency_lines.appendChild(new_path_svg);
+  }
+  
+  for (let i = 0; i < current_incoming_dependencies.length; i ++){
+    var new_path_svg = document.createElementNS('http://www.w3.org/2000/svg','path');
+
+    dep_line = current_incoming_dependencies[i]
+
+    new_path_svg.setAttribute('d', generate_curve_path_text(current_line, dep_line));
+    new_path_svg.setAttribute("class", "dependency-line incoming-dependency")
+    dependency_lines.appendChild(new_path_svg);
+  }
 
 
   // Selected highlighting

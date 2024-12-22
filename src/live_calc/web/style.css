@@ -25,7 +25,9 @@ html,body{
   color: rgb(255,255,255);
   
   font-family: 'Roboto Mono', monospace;
-  font-size: 1.1em;
+  font-size: 1em;
+  line-height: 1.4;
+  /* line-height: 1em; */
   
   /* width: 99%; */
   padding: 0.8rem;
@@ -48,6 +50,8 @@ html,body{
   top: 0;
   left: 0;
   height: 100vh;
+
+  font-size: 1.1rem;
   
   padding: 0px;
   
@@ -185,6 +189,25 @@ html,body{
 
 .outgoing-dependency-line-number{
   color: rgb(127, 66, 196);
+}
+
+#dependency-lines {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.dependency-line {
+  stroke: white;
+  stroke-width: 0.15rem;
+  fill:transparent;
+}
+
+.incoming-dependency {
+  stroke: rgb(49, 150, 93);
+}
+
+.outgoing-dependency {
+  stroke: rgb(127, 66, 196);
 }
 
 .info_text{
