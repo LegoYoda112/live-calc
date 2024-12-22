@@ -3,8 +3,11 @@ let runs = 0;
 let input 
 let display_text
 let display_text_selected
+let current_line
 let output
 let output_holder
+let incoming_line_dependencies = []
+let outgoing_line_dependencies = []
 let error_dot
 let time_info
 let var_info
@@ -24,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   input = document.getElementById("input");
   display_text = document.getElementById("display-text");
   display_text_selected = document.getElementById("display-text-selected");
+  line_display = document.getElementById("line-display");
   output = document.getElementById("output");
   output_holder = document.getElementById("output-holder");
   error_dot = document.getElementById("error-dot");
@@ -39,15 +43,16 @@ document.addEventListener('DOMContentLoaded', function(event) {
   error_info = document.getElementById("error-info");
 
   // Start an update timer to recalc at 10Hz
-  let update_timer=setInterval(update, 100);
+  // let update_timer=setInterval(update, 100);
 
   // Update text and input box height as text is typed into it
   // input.setAttribute("style", "height:" + (input.scrollHeight) + "px;overflow-y:hidden;");
   input.addEventListener("input", function () {
     // Update the display text
+    update();
     update_display_text();
     update_input_height();
-  }, false);  
+  }, false); 
 
   error_info.style.color = "rgb(0,0,0,0)";
   // On error dot mouseover, show the error message + the line
@@ -64,21 +69,37 @@ document.addEventListener('DOMContentLoaded', function(event) {
   })
 
   // Update display text as the mouse moves (mainly for highlighting)
-  input.addEventListener("mousemove", function() {
-    update_display_text();
-  })
+  // input.addEventListener("mousemove", function() {
+  //   update_display_text();
+  // })
   input.addEventListener("mousedown", function() {
-    update_display_text();
+    setTimeout(update_display_text, 1);
   })
   input.addEventListener("mouseup", function() {
     update_display_text();
+    // update_dependency_display();
   })
+
+  input.addEventListener("keydown", function() {
+    setTimeout(update_display_text, 1);
+  })
+  input.addEventListener("keyup", function() {
+    update_display_text();
+  })
+  
 
   // Update the file list
   update_file_list();
   // Focus the input textarea
   input.focus();
 })
+
+
+// function update_dependency_display(){
+//   current_line = input.value.substr(0, input.selectionStart).split("\n").length;
+
+//   console.log(current_line)
+// }
 
 // Update the display text
 // The visual text is made up of three seperate elements
@@ -97,6 +118,40 @@ function update_display_text(){
   input_text = input_text.replaceAll(/(#.*?\n)/ig, "<span class = 'comment'>$1</span>")
   input_text = input_text.replaceAll(/([0-9]+.[0-9]+|[0-9]+)/ig, "<span class = 'number'>$1</span>")
   display_text.innerHTML = input_text;
+
+
+  current_line = input.value.substr(0, input.selectionStart).split("\n").length - 1;
+
+  line_text = "";
+  num_lines = 1;
+  input_regex = input.value.match(/\n/g)
+  if(input_regex){
+    num_lines = input.value.match(/\n/g).length + 1;
+  }
+
+  if(current_line < incoming_line_dependencies.length){
+    current_incoming_dependencies = incoming_line_dependencies[current_line]
+    current_outgoing_dependencies = outgoing_line_dependencies[current_line]
+  } else {
+    current_incoming_dependencies = []
+    current_outgoing_dependencies = []
+  }
+
+  for (let i = 0; i < num_lines; i++) {
+
+    if(i == current_line){
+      line_text += "<span class = 'active-line-number'>" + String(i) + "</span>\n";
+    } else if(current_incoming_dependencies.includes(i)) {
+      line_text += "<span class = 'incoming-dependency-line-number'>" + String(i) + "</span>\n";
+    } else if(current_outgoing_dependencies.includes(i)) {
+      line_text += "<span class = 'outgoing-dependency-line-number'>" + String(i) + "</span>\n";
+    } else {
+      line_text += String(i) + "\n";
+    }
+  }
+
+  line_display.innerHTML = line_text;
+
 
   // Selected highlighting
   // var start = input.selectionStart;
@@ -142,6 +197,14 @@ function write_output(output_text, error) {
     // Make the error dot red!
     error_dot.style.backgroundColor = "rgb(200, 45, 45)";
   }
+}
+
+// Probably a more efficient way to do this with eel but.... too bad
+eel.expose(update_dependency_lists)
+function update_dependency_lists(_incoming_line_dependencies, _outgoing_line_dependencies) {
+  console.log(_incoming_line_dependencies)
+  incoming_line_dependencies = _incoming_line_dependencies
+  outgoing_line_dependencies = _outgoing_line_dependencies
 }
 
 // Set the value of the timer element

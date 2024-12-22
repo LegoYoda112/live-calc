@@ -40,6 +40,8 @@ def parse_line(line, context, output_only = True):
 
     # Split line by spaces
     line_split = line.split()
+
+    line_dependencies = {'assign': None, 'use': []}
     
     # EMPTY LINE
     if(len(line_split) == 0):
@@ -80,6 +82,9 @@ def parse_line(line, context, output_only = True):
                 # print(element)
                 new_element = "context['" + element + "']"
 
+                # Update dependencies
+                line_dependencies['use'].append(element)
+
                 new_line_split.append(new_element)
             else:
                 new_line_split.append(element)
@@ -95,12 +100,15 @@ def parse_line(line, context, output_only = True):
         
         # If we're assigning, assign to a new variable in the context
         if assign:
+            variable_name = line_split[0]
 
             # If the value is a list, convert to a np array
             if type(eval_value) == list:
-                context[line_split[0]] = np.array(eval_value)
+                context[variable_name] = np.array(eval_value)
             else:
-                context[line_split[0]] = eval_value
+                context[variable_name] = eval_value
+
+            line_dependencies['assign'] = variable_name
 
             # If it's a number, round for output
             # Note this doesn't round the value stored in context
@@ -125,7 +133,53 @@ def parse_line(line, context, output_only = True):
             # Add to output
             output_line += "= " + eval_value
 
-    return output_line
+    return output_line, line_dependencies
+
+# Generates dependencies given the list of line dependencies
+# Essentially just fills in line numbers
+def generate_line_dependencies(dependency_list):
+    number_of_lines = len(dependency_list)
+
+    incoming_line_dependencies = [None] * number_of_lines
+    outgoing_line_dependencies = [[]] * number_of_lines
+
+    # I really don't like doing this, there must be a better way
+    for i in range(number_of_lines):
+        incoming_line_dependencies[i] = []
+
+    # Generate outgoing dependencies
+    for line_num in range(number_of_lines):
+        outgoing_line_dependency = []
+
+        assign_variable = dependency_list[line_num]["assign"]
+        
+        # If current line uses a value, assign outgoing dependencies
+        if(dependency_list[line_num]["use"] != None):
+            
+            # Move forward through list to find if variable is used again
+            for forward_num in range(number_of_lines - line_num - 1):
+                forward_line_num = line_num + forward_num + 1
+
+                # If the variable is found in the lines "use" list, add it to the outgoing dependencies
+                if(assign_variable in dependency_list[forward_line_num]["use"]):
+                    outgoing_line_dependency.append(forward_line_num)
+
+                # If variable gets set again, break
+                if(dependency_list[forward_line_num]["assign"] == assign_variable):
+                    break
+                        
+            # put current line's dependency into main list
+            outgoing_line_dependencies[line_num] = outgoing_line_dependency
+
+            # update incoming dependencies 
+            # this is somewhat redundant information, but helpful
+            for outgoing_dependency_line_number in outgoing_line_dependencies[line_num]:
+
+                incoming_line_dependencies[outgoing_dependency_line_number].append(line_num)
+
+    return incoming_line_dependencies, outgoing_line_dependencies
+
+
 
 def parse(input_text, output_only = False):
     # TODO: Make this a class?
@@ -133,24 +187,27 @@ def parse(input_text, output_only = False):
     # Holds current values of all variables
     context = {}
 
+    # Holds which variables each line relies on
+    dependency_list = []
+
     # Holds output text
     output_text = ""
 
     error = None
-    line_number = 0
 
     # Iterate over each input line going from top to bottom
-    for line in input_text.splitlines():
+    for (line_number, line) in enumerate(input_text.splitlines()):
         try:
-            output_text += parse_line(line, context) + "\n"
+            output_line, line_dependencies = parse_line(line, context)
+            output_text += output_line + "\n"
+
+            dependency_list.append(line_dependencies)
         except Exception as e:
             error = (line_number, str(e))
             break
         
-        line_number += 1
-    
     # Return output text, variable context and error
-    return output_text, context, error
+    return output_text, context, dependency_list, error
 
 # Check if a variable is an integer or float
 # TODO: Make this work better with units
