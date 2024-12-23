@@ -79,17 +79,17 @@ document.addEventListener('DOMContentLoaded', function(event) {
   input.addEventListener("mousedown", function() {
     setTimeout(update_display_text, 1);
   })
-  input.addEventListener("mouseup", function() {
-    update_display_text();
-    // update_dependency_display();
-  })
+  // input.addEventListener("mouseup", function() {
+  //   update_display_text();
+  //   // update_dependency_display();
+  // })
 
   input.addEventListener("keydown", function() {
     setTimeout(update_display_text, 1);
   })
-  input.addEventListener("keyup", function() {
-    update_display_text();
-  })
+  // input.addEventListener("keyup", function() {
+  //   update_display_text();
+  // })
   
 
   // Update the file list

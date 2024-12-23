@@ -3,10 +3,22 @@ import re
 from math import sqrt, sin, cos
 import math
 import numpy as np
-from pint import UnitRegistry
+from pint import UnitRegistry, Quantity, PintError
 
 # Set up units
 ureg = UnitRegistry()
+
+# preferred units
+preferred_units = [
+    ureg.m,
+    ureg.kg,
+    ureg.s,
+    ureg.C,
+    ureg.N,
+    ureg.W,
+    ureg.m * ureg.N
+]
+ureg.default_preferred_units = preferred_units
 # Units to parse
 unit_list = ["m", "cm", "mm", "km", "s"]
 
@@ -27,7 +39,7 @@ def parse_line(line, context, output_only = True):
     line = re.sub("(\))(?!=[0-9a-zA-Z])", " )", line)
 
     # Pad control characters
-    chars_to_pad = ('\=', '\+', '\*', '\[', '\]', '\,', '\/', '\.')
+    chars_to_pad = ('\=', '\+', '\*', '\[', '\]', '\,', '\/')
     for char in chars_to_pad:
         line = re.sub(char, " " + char[-1] + " ", line)
 
@@ -113,7 +125,10 @@ def parse_line(line, context, output_only = True):
             # If it's a number, round for output
             # Note this doesn't round the value stored in context
             if(is_number(eval_value)):
-                eval_value = round(eval_value, 3)
+                eval_value = round(eval_value, 4)
+
+            if(isinstance(eval_value, Quantity)):
+                eval_value = simplify_units(eval_value)
             
             # Convert to a string
             eval_value = str(eval_value)
@@ -125,7 +140,11 @@ def parse_line(line, context, output_only = True):
             
             # If it's a number, round it
             if(is_number(eval_value)):
-                eval_value = round(eval_value, 3)
+                eval_value = round(eval_value, 4)
+
+            # If it's a number with units, round it as well and reduce units
+            if(isinstance(eval_value, Quantity)):
+                eval_value = simplify_units(eval_value)
             
             # Convert to string
             eval_value = str(eval_value)
@@ -134,6 +153,20 @@ def parse_line(line, context, output_only = True):
             output_line += "= " + eval_value
 
     return output_line, line_dependencies
+
+def simplify_units(value):
+
+    # Attempt to force conversions
+    # TODO: This is bad
+    try:
+        value = value.to(ureg.N * ureg.m)
+    except PintError:
+        pass
+
+    
+    value = value.to_reduced_units().to_compact()
+
+    return round(value, 4)
 
 # Generates dependencies given the list of line dependencies
 # Essentially just fills in line numbers
