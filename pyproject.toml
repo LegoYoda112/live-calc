@@ -1,6 +1,6 @@
 [project]
 name = "live_calc"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     { name = "Thomas Godden", email = "thomas.godden@outlook.com"}
 ]

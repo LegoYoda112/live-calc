@@ -11,7 +11,7 @@ logger = logging.getLogger()
 
 # Make arg parser
 parser = argparse.ArgumentParser(
-    prog='live-calc',
+    prog='live_calc',
 )
 parser.add_argument("-v", "--verbosity", type=int, choices=[1, 2, 3],
                     help="increase output verbosity")
