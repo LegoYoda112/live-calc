@@ -3,7 +3,20 @@ from live_calc import calc_parser
 import time
 import os
 from importlib.resources import files
+import logging
+import argparse
 
+# Make logger
+logger = logging.getLogger()
+
+# Make arg parser
+parser = argparse.ArgumentParser(
+    prog='live-calc',
+)
+parser.add_argument("-v", "--verbosity", type=int, choices=[1, 2, 3],
+                    help="increase output verbosity")
+
+# Make filepaths
 WEB_DIR = files('live_calc').joinpath('web')
 SAVE_DIR = './saves'
 
@@ -44,8 +57,18 @@ def send_input(input_string):
     start_time = time.time()
 
     # Parse, calculate and store output
-    output, context, error = calc_parser.parse(input_string, True)
+    # The space is to make sure line numbers work correctly
+    # TODO: This is a hack and should be fixed when spitting using new lines
+    output, context, dependency_list, error = calc_parser.parse(input_string, True)
     time_elapsed = time.time() - start_time
+
+    incoming_line_dependencies, outgoing_line_dependencies = calc_parser.generate_line_dependencies(dependency_list)
+
+    logger.debug(context)
+    logger.debug(dependency_list)
+    logger.debug(incoming_line_dependencies)
+    logger.debug(outgoing_line_dependencies)
+    logger.debug(("Time elapsed", time_elapsed))
 
     # If there's an error, set the error text
     # if error != None:
@@ -56,8 +79,25 @@ def send_input(input_string):
     if(context != None):
         eel.set_var_num(len(context))
 
-    # Write the output
+    # Write the output and dependency lists
     eel.write_output(output, error)
+    eel.update_dependency_lists(incoming_line_dependencies, outgoing_line_dependencies)
 
-# Start the app
-eel.start('app.html', size=(700, 500), port=0)
+
+if(__name__ == "__main__"):
+    args = parser.parse_args()
+    if(args.verbosity == 1):
+        print("Error level verbosity turned on")
+        logging.basicConfig(level=logging.WARNING)
+    elif(args.verbosity == 2):
+        print("Info level verbosity turned on")
+        logging.basicConfig(level=logging.INFO)
+    elif(args.verbosity == 3):
+        print("Debug level verbosity turned on")
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        print("Logging disabled")
+        logging.basicConfig(level=logging.FATAL)
+
+    # Start the app
+    eel.start('app.html', size=(700, 500), port=0)

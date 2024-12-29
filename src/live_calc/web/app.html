@@ -11,15 +11,18 @@
 <title>new calc</title>
 
 <body>
-  <div class = "calc-input" id = "line-error-container"><div id = "line-error-break-container"></div><span id = "line-error"></span></div>
 
   <!-- Calculator -->
   <div class = "fullscreen-padding">
+    <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class = "calc-input" id = "dependency-lines">
+      
+    </svg>
+
+    <div class = "calc-input" id = "line-error-container"><div id = "line-error-break-container"></div><span id = "line-error"></span></div>
+    <p class = "calc-input" id = "line-display"></p>
     <p class = "calc-input" id = "output"></p>
-    <p class = "calc-input" id = "display-text">
-    </p>
-    <p class = "calc-input" id = "display-text-selected"></p>
-    <textarea class = "calc-input" id = "input"></textarea>
+    <p class = "calc-input" id = "display-text"></p>
+    <textarea class = "calc-input" id = "input" spellcheck="false"></textarea>
   </div>
   
   <!-- Status dots -->
